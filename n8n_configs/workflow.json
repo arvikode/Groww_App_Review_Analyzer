@@ -1,0 +1,273 @@
+{
+  "name": "Groww Review Insights Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Groww Review Analyzer",
+        "formDescription": "Choose a data source and click Submit to run the weekly pulse analysis.\n\n📋 If uploading a custom CSV, it must have these 4 columns:\n  • rating  — number 1–5\n  • title   — short review headline (can be blank)\n  • text    — full review text\n  • date    — in YYYY-MM-DD format (e.g. 2026-02-15)\nDates must fall within the last 8 weeks. Max 100 rows processed.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Run Mode",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  { "option": "Use sample Groww data" },
+                  { "option": "Upload custom CSV" }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "data",
+              "fieldType": "file",
+              "requiredField": false,
+              "acceptFileTypes": ".csv",
+              "multipleFiles": false
+            }
+          ]
+        },
+        "options": {
+          "respondWith": "text",
+          "responseText": "Thanks! Your analysis is running — check your inbox in ~10 minutes."
+        }
+      },
+      "id": "node-1-form-trigger",
+      "name": "Upload CSV (Manual Trigger)",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [240, 300],
+      "webhookId": "groww-csv-upload-form"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "sample-mode-check",
+              "leftValue": "={{ $json['Run Mode'] }}",
+              "rightValue": "Use sample Groww data",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-2-if-route",
+      "name": "Route by Mode",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Sample Groww Reviews — 25 reviews (Dec 2025 – Feb 2026)\n// 5 reviews per theme for balanced analysis. Anonymised, PII-free.\n// Themes: 1=UX/Login  2=Bugs/Performance  3=Feature Requests  4=Money/Security  5=Support\nconst REVIEWS = [\n  // Theme 1 — Onboarding & UX Confusion\n  {rating:2,title:\"Login issues\",text:\"Can't login anymore. Keep getting error message. Very frustrating\",date:\"2026-02-14\"},\n  {rating:3,title:\"Navigation confusing\",text:\"Login process is confusing. Took me 20 mins to get in\",date:\"2026-02-05\"},\n  {rating:2,title:\"Password reset fail\",text:\"Password reset not working. Stuck outside my account for days\",date:\"2026-01-11\"},\n  {rating:2,title:\"OTP not working\",text:\"OTP not coming for login. This is a major blocker\",date:\"2026-01-01\"},\n  {rating:2,title:\"Signup issues\",text:\"Can't complete signup. Form keeps erroring out on the last step\",date:\"2025-12-02\"},\n  // Theme 2 — Performance & Technical Bugs\n  {rating:1,title:\"App crashes\",text:\"App crashes every time I try to check my portfolio. Lost trust completely\",date:\"2026-02-12\"},\n  {rating:3,title:\"Slow loading\",text:\"Takes forever to load. Need much better performance\",date:\"2026-02-11\"},\n  {rating:2,title:\"Bug in portfolio\",text:\"Portfolio section shows wrong values. Please fix this bug\",date:\"2026-02-04\"},\n  {rating:2,title:\"App freezes\",text:\"App freezes when I try to buy stocks. Very annoying experience\",date:\"2026-01-26\"},\n  {rating:2,title:\"Trade failed\",text:\"Trade execution failed multiple times today. Unacceptable\",date:\"2025-12-27\"},\n  // Theme 3 — Missing Features & Requests\n  {rating:4,title:\"Missing features\",text:\"Good app but wish it had options trading. Please add this feature\",date:\"2026-02-13\"},\n  {rating:3,title:\"Feature missing\",text:\"Need an option to track SIP investments better with charts\",date:\"2026-01-30\"},\n  {rating:4,title:\"Pretty good\",text:\"Pretty good but could use more features like price alerts and watchlists\",date:\"2026-01-20\"},\n  {rating:3,title:\"Decent app\",text:\"Decent app but competitors have better features for advanced traders\",date:\"2025-12-20\"},\n  {rating:4,title:\"Happy user\",text:\"Happy user but wish there was a web version too for desktop trading\",date:\"2025-12-01\"},\n  // Theme 4 — Trust & Security Concerns\n  {rating:1,title:\"Money disappeared\",text:\"My money disappeared from account. No response from support team\",date:\"2026-02-07\"},\n  {rating:1,title:\"Cannot withdraw\",text:\"Cannot withdraw money for 5 days. This is absolutely unacceptable\",date:\"2026-01-28\"},\n  {rating:1,title:\"Scam alert\",text:\"Feels like a scam. Money not showing in account after transfer\",date:\"2026-01-18\"},\n  {rating:1,title:\"Fraud issues\",text:\"Worried about fraud. Seeing suspicious transactions I never made\",date:\"2026-01-03\"},\n  {rating:2,title:\"Withdrawal stuck\",text:\"Withdrawal request stuck for days. Desperately need this fixed\",date:\"2025-11-27\"},\n  // Theme 5 — Support & Communication\n  {rating:1,title:\"Support ghosted\",text:\"Support team ghosted me. No reply for a week on a critical issue\",date:\"2026-02-02\"},\n  {rating:2,title:\"KYC stuck\",text:\"KYC verification stuck for 3 days. Support not responding at all\",date:\"2026-02-09\"},\n  {rating:1,title:\"Support terrible\",text:\"Support is terrible. No response for 2 weeks on my complaint\",date:\"2025-12-29\"},\n  {rating:4,title:\"Good but slow support\",text:\"Good experience overall but customer support response is painfully slow\",date:\"2026-01-29\"},\n  {rating:1,title:\"Avoid this\",text:\"Avoid this app. Too many problems and zero support from the team\",date:\"2025-11-29\"}\n];\nconsole.log(`Loaded ${REVIEWS.length} sample Groww reviews (5 per theme)`);\nreturn REVIEWS.map(r => ({ json: r }));"
+      },
+      "id": "node-sample-data",
+      "name": "Sample Data (Groww Reviews)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 160]
+    },
+    {
+      "parameters": {
+        "operation": "fromFile",
+        "binaryPropertyName": "data",
+        "options": {
+          "headerRow": true,
+          "includeEmptyCells": false
+        }
+      },
+      "id": "node-3-spreadsheet",
+      "name": "Parse CSV",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [700, 440]
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      },
+      "id": "node-merge",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [940, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// NODE 4: Filter last 8 weeks + sample max 100\n// Handles all date formats n8n may produce from CSV parsing\n\nfunction parseDate(raw) {\n  if (!raw) return null;\n  const s = String(raw).trim();\n\n  // ISO: 2026-02-15\n  if (/^\\d{4}-\\d{2}-\\d{2}/.test(s)) {\n    const d = new Date(s + 'T00:00:00Z');\n    return isNaN(d.getTime()) ? null : d;\n  }\n\n  // M/D/YY or M/D/YYYY — n8n spreadsheet node converts dates to this format\n  const mdy = s.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})/);\n  if (mdy) {\n    let [, m, d, y] = mdy;\n    if (y.length === 2) y = '20' + y;\n    const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T00:00:00Z`);\n    return isNaN(dt.getTime()) ? null : dt;\n  }\n\n  // Excel serial number (days since 1900-01-01)\n  if (/^\\d+$/.test(s)) {\n    const n = parseInt(s);\n    if (n < 100000) {\n      const dt = new Date(Date.UTC(1899, 11, 30) + n * 86400000);\n      return isNaN(dt.getTime()) ? null : dt;\n    }\n    const dt = new Date(n);\n    return isNaN(dt.getTime()) ? null : dt;\n  }\n\n  const dt = new Date(s);\n  return isNaN(dt.getTime()) ? null : dt;\n}\n\nconst today = new Date();\nconst eightWeeksAgo = new Date(today.getTime() - (8 * 7 * 24 * 60 * 60 * 1000));\nconst all = $input.all();\n\nconsole.log(`Total reviews received: ${all.length}`);\nif (all.length > 0) {\n  console.log(`First date raw value: \"${all[0].json.date}\" → parsed: ${parseDate(all[0].json.date)}`);\n}\n\nlet filtered = all.filter(item => {\n  const d = parseDate(item.json.date);\n  return d !== null && d >= eightWeeksAgo && d <= today;\n});\n\nconsole.log(`Reviews within last 8 weeks: ${filtered.length}`);\n\nif (filtered.length > 100) {\n  filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 100);\n  console.log('Sampled down to 100');\n}\n\nif (filtered.length === 0) {\n  throw new Error(`No reviews found in last 8 weeks. Raw date example: \"${all[0]?.json?.date}\". Ensure CSV dates are YYYY-MM-DD, M/D/YY, or M/D/YYYY format.`);\n}\n\nconsole.log(`Processing ${filtered.length} reviews`);\nreturn filtered;"
+      },
+      "id": "node-4-filter-sample",
+      "name": "Filter & Sample (max 100)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// NODE 5: Keyword pre-classification (deterministic baseline)\n\nconst KEYWORD_THEMES = {\n  1: ['login', 'signup', 'sign up', 'sign-up', 'confusing', 'confused', 'complicated', 'navigate', 'navigation', 'ui', 'interface', 'onboard', 'register', 'registration', 'password', 'otp', 'verification code', 'hard to find', 'cant find', \"can't find\"],\n  2: ['crash', 'crashed', 'crashes', 'slow', 'loading', 'load', 'freeze', 'frozen', 'hang', 'bug', 'error', 'glitch', 'not working', 'broken', 'fails', 'failed', 'issue', 'problem', 'stuck'],\n  3: ['wish', 'feature', 'add', 'missing', 'should have', 'need', 'request', 'suggest', 'would be nice', 'option', 'compared to', 'competitor', 'other apps', 'lacks'],\n  4: ['money', 'fund', 'amount', 'security', 'safe', 'scam', 'fraud', 'kyc', 'blocked', 'account', 'withdraw', 'withdrawal', 'transfer', 'refund', 'lost', 'trust', 'concern', 'suspicious', 'locked'],\n  5: ['support', 'customer service', 'help', 'response', 'reply', 'contact', 'resolve', 'team', 'agent', 'ticket', 'ghosted', 'no reply', 'no response', 'ignored']\n};\n\nfunction keywordClassify(text, rating) {\n  const lower = (text || '').toLowerCase();\n  let scores = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };\n  for (const [theme, keywords] of Object.entries(KEYWORD_THEMES)) {\n    for (const kw of keywords) {\n      if (lower.includes(kw)) scores[theme]++;\n    }\n  }\n  const maxScore = Math.max(...Object.values(scores));\n  if (maxScore === 0) return rating <= 2 ? 2 : 3;\n  return parseInt(Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0]);\n}\n\nreturn $input.all().map(item => ({\n  json: {\n    rating: item.json.rating,\n    title: item.json.title || '',\n    text: item.json.text || '',\n    date: item.json.date,\n    keywordTheme: keywordClassify(item.json.text, item.json.rating)\n  }\n}));"
+      },
+      "id": "node-5-keyword-classify",
+      "name": "Keyword Pre-classify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1380, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer PASTE_YOUR_GROQ_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.1-8b-instant\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Reply with ONE digit only: 1=UX/Login 2=Bugs/Performance 3=Feature Request 4=Money/Security 5=Support\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hint:{{ $json.keywordTheme }} Rating:{{ $json.rating }} Text:{{ $json.text }}\"\n    }\n  ],\n  \"max_tokens\": 3,\n  \"temperature\": 0.1\n}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "node-6-groq-api",
+      "name": "Groq: Classify Theme",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1600, 300],
+      "notes": "SETUP REQUIRED: Replace PASTE_YOUR_GROQ_API_KEY_HERE with your key from https://console.groq.com (free)"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// NODE 7: Extract theme from Groq response, fallback to keyword\n// IMPORTANT: After HTTP Request node, $input.item.json is the Groq API response.\n// Original review fields (rating, title, text, date) must be read from the\n// paired item in the Keyword Pre-classify node using $('Keyword Pre-classify').item.json\n\nconst original = $('Keyword Pre-classify').item.json;\n\nlet themeNumber;\ntry {\n  const groqText = $input.item.json.choices[0].message.content.trim();\n  const parsed = parseInt(groqText.match(/[1-5]/)?.[0]);\n  themeNumber = (parsed >= 1 && parsed <= 5) ? parsed : (original.keywordTheme || 2);\n} catch (e) {\n  themeNumber = original.keywordTheme || 2;\n  console.log(`Groq parse error, using keyword fallback: ${themeNumber}`);\n}\n\nconsole.log(`Theme ${themeNumber} assigned to: \"${(original.text || '').substring(0, 40)}...\"`);\n\nreturn {\n  json: {\n    rating: original.rating,\n    title:  original.title,\n    text:   original.text,\n    date:   original.date,\n    theme:  themeNumber\n  }\n};"
+      },
+      "id": "node-7-extract-theme",
+      "name": "Extract Theme Number",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1820, 300]
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "id": "node-8-wait",
+      "name": "Wait 5s (Rate Limit)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [2040, 300],
+      "webhookId": "groww-rate-limit-wait"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// NODE 9: Aggregate themes + generate HTML pulse note\n\nconst THEMES = {\n  1: { name: 'Onboarding & UX Confusion',   emoji: '🧭', blurb: 'Login flow playing hide-and-seek. Users need a GPS to navigate.' },\n  2: { name: 'Performance & Technical Bugs', emoji: '🐛', blurb: 'Crashes and slowness are killing the vibe. Speed matters.' },\n  3: { name: 'Missing Features & Requests',  emoji: '💡', blurb: 'Feature wishlist is growing. Time to peek at the suggestion box.' },\n  4: { name: 'Trust & Security Concerns',    emoji: '🔒', blurb: 'KYC stuck in purgatory. Money anxiety spiking.' },\n  5: { name: 'Support & Communication',      emoji: '📞', blurb: 'Support ghosting complaints. Response times need a Red Bull.' }\n};\n\nconst ACTIONS = {\n  1: (p) => `Simplify the login flow — ${p}% of users need a treasure map just to get in!`,\n  2: (p) => `Speed boost urgently needed — ${p}% are watching loading spinners like it's dial-up TV.`,\n  3: (p) => `Users are DMing their wishlist — ${p}% want more. Time to prioritise the top asks!`,\n  4: (p) => `Verification hiccups are spooking ${p}% of users — smooth out those KYC speed bumps.`,\n  5: (p) => `Support response times need a Red Bull — ${p}% of users are feeling ghosted.`\n};\n\nfunction parseDate(raw) {\n  if (!raw) return null;\n  const s = String(raw).trim();\n  if (/^\\d{4}-\\d{2}-\\d{2}/.test(s)) {\n    const d = new Date(s + 'T00:00:00Z');\n    return isNaN(d.getTime()) ? null : d;\n  }\n  const mdy = s.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})/);\n  if (mdy) {\n    let [, m, d, y] = mdy;\n    if (y.length === 2) y = '20' + y;\n    const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T00:00:00Z`);\n    return isNaN(dt.getTime()) ? null : dt;\n  }\n  if (/^\\d+$/.test(s)) {\n    const n = parseInt(s);\n    const dt = n < 100000\n      ? new Date(Date.UTC(1899, 11, 30) + n * 86400000)\n      : new Date(n);\n    return isNaN(dt.getTime()) ? null : dt;\n  }\n  const dt = new Date(s);\n  return isNaN(dt.getTime()) ? null : dt;\n}\n\nfunction fmt(d) {\n  return d ? d.toISOString().split('T')[0] : 'N/A';\n}\n\nconst reviews = $input.all().map(i => i.json);\nconst total = reviews.length;\nif (total === 0) throw new Error('No classified reviews received.');\n\n// Count per theme\nconst counts = {};\nreviews.forEach(r => {\n  const t = r.theme || 2;\n  if (!counts[t]) counts[t] = { count: 0, reviews: [] };\n  counts[t].count++;\n  counts[t].reviews.push(r);\n});\n\n// Ranked theme list\nconst themeList = Object.entries(counts).map(([id, data]) => ({\n  id: parseInt(id),\n  name: THEMES[id].name,\n  emoji: THEMES[id].emoji,\n  blurb: THEMES[id].blurb,\n  count: data.count,\n  percent: Math.round((data.count / total) * 100),\n  reviews: data.reviews\n})).sort((a, b) => b.count - a.count);\n\nconst top3 = themeList.slice(0, 3);\n\n// 3 diverse quotes — one per top theme\n// Priority: low-rated (1-3 stars) reviews with meaningful text, most recent first\n// Fallback: any review with text if no low-rated ones exist\nconst quotes = [];\nfor (const theme of top3) {\n  const allCandidates = theme.reviews\n    .filter(r => r.text && r.text.trim().length > 20)\n    .sort((a, b) => {\n      const da = parseDate(a.date), db = parseDate(b.date);\n      if (!da && !db) return 0;\n      if (!da) return 1;\n      if (!db) return -1;\n      return db - da; // most recent first\n    });\n\n  // Prefer negative/neutral reviews (1-3 stars) — they carry actionable signal\n  const negatives = allCandidates.filter(r => parseInt(r.rating) <= 3);\n  const pick = negatives.length > 0 ? negatives[0] : allCandidates[0];\n\n  if (pick) {\n    const txt = pick.text.trim();\n    quotes.push({\n      text: txt.length > 120 ? txt.substring(0, 117) + '...' : txt,\n      rating: parseInt(pick.rating) || 3,\n      date: pick.date\n    });\n  } else {\n    quotes.push(null);\n  }\n}\n\n// 3 action nudges\nconst actions = top3.map(t => ACTIONS[t.id](t.percent));\n\n// Date range\nconst parsedDates = reviews.map(r => parseDate(r.date)).filter(Boolean).sort((a, b) => a - b);\nconst startDate = fmt(parsedDates[0]);\nconst endDate   = fmt(parsedDates[parsedDates.length - 1]);\nconst weekLabel = fmt(new Date());\n\n// Word count (plain text version for validation)\nconst plainText = [\n  `Groww Review Pulse Week of ${weekLabel}`,\n  `Reviews Analyzed ${total} Period ${startDate} to ${endDate}`,\n  'Top 3 Themes This Week',\n  ...top3.map(t => `${t.name} ${t.percent}% ${t.count} reviews ${t.blurb}`),\n  'Real User Voices',\n  ...quotes.map(q => q ? `${q.text} ${q.rating} star review ${q.date}` : ''),\n  '3 Action Nudges',\n  ...actions\n].join(' ');\nconst wordCount = plainText.trim().split(/\\s+/).length;\nconsole.log(`Word count: ${wordCount}`);\nif (wordCount > 250) console.warn(`Over 250 words (${wordCount}) — consider shortening blurbs`);\n\n// ── HTML Email Body ────────────────────────────────────────────────\nconst starsHtml = (n) => '⭐'.repeat(Math.min(Math.max(n, 1), 5));\n\nlet html = `<div style=\"font-family:Arial,sans-serif;max-width:640px;margin:0 auto;padding:20px;color:#222;\">`;\n\n// Header\nhtml += `\n<div style=\"background:#00a36c;color:white;padding:20px 24px;border-radius:10px;margin-bottom:16px;\">\n  <h1 style=\"margin:0;font-size:20px;letter-spacing:0.5px;\">📊 Groww Review Pulse</h1>\n  <p style=\"margin:6px 0 0 0;opacity:0.9;font-size:14px;\">Week of ${weekLabel}</p>\n</div>`;\n\n// Meta bar\nhtml += `\n<p style=\"background:#f4f7ff;padding:10px 16px;border-radius:6px;font-size:13px;margin-bottom:24px;\">\n  <strong>Reviews Analyzed:</strong> ${total} &nbsp;|&nbsp;\n  <strong>Period:</strong> ${startDate} to ${endDate} &nbsp;|&nbsp;\n  <strong>Source:</strong> Google Play Store\n</p>`;\n\n// Section header\nhtml += `<h2 style=\"color:#00a36c;font-size:16px;border-bottom:2px solid #e0f2ec;padding-bottom:6px;margin-bottom:16px;\">🎯 Top 3 Themes — with Quotes & Actions</h2>`;\n\n// One card per theme: facts → humor → quote → action\ntop3.forEach((t, i) => {\n  const q = quotes[i];\n  const a = actions[i];\n\n  html += `\n<div style=\"border:1px solid #e0f2ec;border-radius:10px;padding:18px;margin-bottom:20px;\">\n\n  <!-- Theme facts (bold, prominent) -->\n  <div style=\"display:flex;align-items:center;gap:10px;margin-bottom:6px;\">\n    <span style=\"font-size:22px;\">${t.emoji}</span>\n    <div>\n      <strong style=\"font-size:15px;\">#${i+1} ${t.name}</strong><br>\n      <span style=\"background:#e0f2ec;color:#007a52;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:bold;\">\n        ${t.percent}% of reviews &bull; ${t.count} out of ${total}\n      </span>\n    </div>\n  </div>\n\n  <!-- Humorous insight (italic, separate from facts) -->\n  <p style=\"margin:8px 0 12px 0;font-style:italic;color:#666;font-size:13px;border-left:3px solid #b2dfdb;padding-left:10px;\">\n    ${t.blurb}\n  </p>\n\n  <!-- Real user quote -->\n  ${q ? `\n  <div style=\"background:#f9fffe;border-left:4px solid #00a36c;padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:12px;\">\n    <p style=\"margin:0 0 6px 0;font-size:14px;\">&ldquo;${q.text}&rdquo;</p>\n    <span style=\"font-size:12px;color:#888;\">${starsHtml(q.rating)} ${q.rating}-star review &bull; ${q.date}</span>\n  </div>` : ''}\n\n  <!-- Action idea -->\n  ${a ? `\n  <div style=\"background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:10px 14px;\">\n    <span style=\"font-size:12px;font-weight:bold;color:#f59e0b;\">⚡ ACTION IDEA</span><br>\n    <span style=\"font-size:14px;\">${a}</span>\n  </div>` : ''}\n\n</div>`;\n});\n\n// Footer\nhtml += `\n<div style=\"text-align:center;margin-top:24px;padding:16px;background:#f4f7ff;border-radius:8px;\">\n  <p style=\"margin:0;font-style:italic;color:#555;font-size:15px;\">Laugh. Learn. Iterate. 🚀</p>\n</div>\n<p style=\"text-align:center;font-size:11px;color:#bbb;margin-top:12px;\">\n  ${total} Play Store reviews &bull; ${wordCount} words &bull; Powered by n8n + Groq\n</p>`;\n\nhtml += `</div>`;\n\nconst top3Names = top3.map(t => `${t.emoji} ${t.name}`);\n\nreturn [{\n  json: {\n    htmlBody:   html,\n    wordCount:  wordCount,\n    top3Themes: top3Names,\n    reviewCount: total,\n    dateRange:  `${startDate} to ${endDate}`,\n    weekLabel:  weekLabel\n  }\n}];"
+      },
+      "id": "node-9-aggregate-generate",
+      "name": "Aggregate & Generate Note",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2260, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "toList": "ENTER_YOUR_EMAIL_HERE@gmail.com",
+        "subject": "=📊 Groww Review Pulse: Week of {{ $json.weekLabel }}",
+        "emailType": "html",
+        "message": "={{ $json.htmlBody }}",
+        "options": {}
+      },
+      "id": "node-10-gmail-send",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2480, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail OAuth"
+        }
+      },
+      "notes": "SETUP REQUIRED: Connect Gmail OAuth. Update toList with your email. Resource=Message, Operation=Send, Email Type=HTML."
+    }
+  ],
+  "connections": {
+    "Upload CSV (Manual Trigger)": {
+      "main": [[{ "node": "Route by Mode", "type": "main", "index": 0 }]]
+    },
+    "Route by Mode": {
+      "main": [
+        [{ "node": "Sample Data (Groww Reviews)", "type": "main", "index": 0 }],
+        [{ "node": "Parse CSV", "type": "main", "index": 0 }]
+      ]
+    },
+    "Sample Data (Groww Reviews)": {
+      "main": [[{ "node": "Merge", "type": "main", "index": 0 }]]
+    },
+    "Parse CSV": {
+      "main": [[{ "node": "Merge", "type": "main", "index": 1 }]]
+    },
+    "Merge": {
+      "main": [[{ "node": "Filter & Sample (max 100)", "type": "main", "index": 0 }]]
+    },
+    "Filter & Sample (max 100)": {
+      "main": [[{ "node": "Keyword Pre-classify", "type": "main", "index": 0 }]]
+    },
+    "Keyword Pre-classify": {
+      "main": [[{ "node": "Groq: Classify Theme", "type": "main", "index": 0 }]]
+    },
+    "Groq: Classify Theme": {
+      "main": [[{ "node": "Extract Theme Number", "type": "main", "index": 0 }]]
+    },
+    "Extract Theme Number": {
+      "main": [[{ "node": "Wait 5s (Rate Limit)", "type": "main", "index": 0 }]]
+    },
+    "Wait 5s (Rate Limit)": {
+      "main": [[{ "node": "Aggregate & Generate Note", "type": "main", "index": 0 }]]
+    },
+    "Aggregate & Generate Note": {
+      "main": [[{ "node": "Send Email", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "groww-review-analyzer"
+  }
+}

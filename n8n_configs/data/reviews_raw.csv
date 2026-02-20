@@ -1,0 +1,90 @@
+rating,title,text,date,username,thumbs_up
+5,Good app,Love this app for investing. Easy to use and fast,2026-02-15,Rajesh_K,12
+2,Login issues,Can't login anymore. Keep getting error message. Very frustrating,2026-02-14,Priya_M,45
+4,Missing features,Good app but wish it had options trading. Please add this feature,2026-02-13,Amit_S,8
+1,App crashes,App crashes every time I try to check my portfolio. Lost trust,2026-02-12,Neha_P,67
+3,Slow loading,Takes forever to load. Need better performance,2026-02-11,Vikram_R,23
+5,Best investment app,Best investment app I've used! Highly recommend,2026-02-10,Sneha_L,34
+2,KYC stuck,KYC verification stuck for 3 days. Support not responding,2026-02-09,Arjun_B,89
+4,Good but confusing,App is useful but UI is confusing. Hard to navigate,2026-02-08,Divya_T,15
+1,Money disappeared,My money disappeared from account. No response from support,2026-02-07,Rohit_G,123
+5,Excellent,Excellent app for beginners. Very user friendly,2026-02-06,Kavita_J,19
+3,Navigation confusing,Login process is confusing AF. Took me 20 mins to get in,2026-02-05,Sanjay_N,41
+2,Bug in portfolio,Portfolio section shows wrong values. Fix this bug please,2026-02-04,Meera_K,28
+4,Great features,Great features but app crashes sometimes on iOS 18,2026-02-03,Aditya_V,17
+1,Support ghosted,Support team ghosted me. No reply for a week,2026-02-02,Pooja_M,91
+5,Love it,Love the interface and ease of use. Keep it up!,2026-02-01,Karan_S,22
+3,Account locked,My account got locked without reason. Need help urgently,2026-01-31,Anjali_R,56
+2,Feature missing,Need option to track SIP investments better,2026-01-30,Vishal_P,14
+4,Good experience,Good experience overall but slow customer support,2026-01-29,Ritu_D,31
+1,Cannot withdraw,Cannot withdraw money for 5 days. This is unacceptable,2026-01-28,Manish_L,78
+5,Smooth transactions,Smooth transactions and good UI design,2026-01-27,Nisha_B,25
+2,App freezes,App freezes when I try to buy stocks. Very annoying,2026-01-26,Suresh_K,43
+3,Verification delay,Email verification taking too long. Speed it up,2026-01-25,Preeti_J,19
+4,Nice app,Nice app but needs better search functionality,2026-01-24,Gaurav_M,12
+1,Worst experience,Worst experience. Money stuck and no support,2026-01-23,Deepa_S,134
+5,Highly recommended,Highly recommended for stock market beginners,2026-01-22,Rahul_T,27
+2,Login broken,Login is completely broken after last update,2026-01-21,Swati_V,62
+4,Pretty good,Pretty good but could use more features like alerts,2026-01-20,Abhishek_N,18
+3,Support needed,Need better customer support response times,2026-01-19,Lakshmi_P,35
+1,Scam alert,Feels like scam. Money not showing in account,2026-01-18,Manoj_R,156
+5,Perfect,Perfect for investing in mutual funds and stocks,2026-01-17,Sonali_G,21
+2,Crashes often,Crashes too often. Please fix stability issues,2026-01-16,Vivek_K,48
+4,User friendly,User friendly interface but slow loading times,2026-01-15,Ishita_B,16
+3,Mixed feelings,Mixed feelings. Good features but buggy performance,2026-01-14,Nikhil_D,29
+1,Account blocked,Account blocked without explanation. Very unprofessional,2026-01-13,Tanya_M,98
+5,Great service,Great service and easy to understand for newbies,2026-01-12,Akash_S,24
+2,Password reset fail,Password reset not working. Stuck outside account,2026-01-11,Priyanka_L,51
+4,Solid app,Solid app but needs better help documentation,2026-01-10,Harish_J,13
+3,Notification issues,Push notifications not working properly,2026-01-09,Anita_R,32
+1,Lost all trust,Lost all trust after money transfer failed twice,2026-01-08,Sandeep_V,87
+5,Fantastic,Fantastic app for tracking portfolio performance,2026-01-07,Megha_N,20
+2,Search broken,Search functionality is broken. Can't find stocks,2026-01-06,Ramesh_P,44
+4,Good UI,Good UI design but performance could be better,2026-01-05,Shruti_K,15
+3,Average experience,Average experience. Nothing special but works,2026-01-04,Varun_M,26
+1,Fraud issues,Worried about fraud. Suspicious transactions shown,2026-01-03,Radha_S,109
+5,Best ever,Best investment platform I've ever used,2026-01-02,Prakash_T,28
+2,OTP not working,OTP not coming for login. Major issue,2026-01-01,Seema_B,59
+4,Recommend it,Would recommend but fix the occasional crashes,2026-12-31,Ajay_G,17
+3,Help needed,Need better help section. Can't find answers,2025-12-30,Nidhi_L,33
+1,Support terrible,Support is terrible. No response for 2 weeks,2025-12-29,Mohit_R,142
+5,Amazing,Amazing features and smooth user experience,2025-12-28,Riya_K,22
+2,Trade failed,Trade execution failed multiple times today,2025-12-27,Siddharth_V,47
+4,Good enough,Good enough for basic investing needs,2025-12-26,Pallavi_J,14
+3,UI update needed,UI needs update. Looks outdated now,2025-12-25,Karthik_M,31
+1,Money missing,Money missing from wallet. This is serious,2025-12-24,Deepika_S,95
+5,Excellent platform,Excellent platform for long term investing,2025-12-23,Arun_P,26
+2,Glitchy,Too glitchy after recent update. Fix it ASAP,2025-12-22,Madhavi_N,53
+4,Mostly good,Mostly good but customer service needs work,2025-12-21,Praveen_D,19
+3,Decent app,Decent app but competitors have better features,2025-12-20,Jyoti_R,28
+1,Uninstalling,Uninstalling due to constant errors and crashes,2025-12-19,Rakesh_M,118
+5,Top notch,Top notch app for mutual fund investments,2025-12-18,Shraddha_K,23
+2,Bank link broken,Bank account linking not working properly,2025-12-17,Vikas_L,46
+4,Worth trying,Worth trying but has room for improvement,2025-12-16,Archana_B,16
+3,So-so,So-so experience. Expected more features,2025-12-15,Naveen_S,34
+1,Disaster,Complete disaster after iOS update. Can't open,2025-12-14,Sunita_V,103
+5,Love the app,Love the app! Makes investing so simple,2025-12-13,Ashish_G,21
+2,Chart issues,Charts not loading. Technical problems persist,2025-12-12,Poornima_T,40
+4,Good start,Good starting point for new investors,2025-12-11,Sunil_J,18
+3,Needs polish,Needs more polish. Some rough edges visible,2025-12-10,Kaveri_M,27
+1,Refund pending,Refund pending for over a month now. Scam,2025-12-09,Dinesh_R,167
+5,Superb,Superb app with great educational content too,2025-12-08,Vidya_N,25
+2,Error messages,Constant error messages. Very frustrating experience,2025-12-07,Bharat_K,52
+4,Clean interface,Clean interface but needs faster execution,2025-12-06,Lata_P,15
+3,Could be better,Could be better. Average at best,2025-12-05,Mohan_S,30
+1,Zero stars,Would give zero stars if possible. Horrible,2025-12-04,Usha_L,189
+5,Brilliant,Brilliant for tracking all my investments in one place,2025-12-03,Pankaj_D,24
+2,Signup issues,Can't complete signup. Form keeps erroring out,2025-12-02,Geeta_M,48
+4,Happy user,Happy user but wish there was web version too,2025-12-01,Tarun_R,17
+3,Works okay,Works okay most of the time. Not great not terrible,2025-11-30,Shilpa_V,32
+1,Avoid this,Avoid this app. Too many problems and no support,2025-11-29,Yogesh_K,145
+5,Outstanding,Outstanding app for tracking market trends,2025-11-28,Namita_J,23
+2,Withdrawal stuck,Withdrawal request stuck for days. Need fix,2025-11-27,Anil_B,55
+4,Satisfied,Satisfied with the service but support is slow,2025-11-26,Renu_S,16
+3,Nothing special,Nothing special. Just another trading app,2025-11-25,Deepak_G,29
+1,Security concerns,Have serious security concerns about this app,2025-11-24,Anupama_T,127
+5,Five stars,Five stars for ease of use and reliability,2025-11-23,Sudhir_M,22
+2,Update broke it,Latest update broke many features. Roll back please,2025-11-22,Shobha_N,49
+4,Quite good,Quite good for portfolio management,2025-11-21,Girish_P,15
+3,Fair enough,Fair enough but lacks advanced trading tools,2025-11-20,Rekha_D,31
+1,Total waste,Total waste of time. Don't download,2025-11-19,Kishore_L,172
